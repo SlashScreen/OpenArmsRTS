@@ -1,9 +1,12 @@
+using Microsoft.Extensions.ObjectPool;
 using Raylib_cs;
 
 namespace RTS.Engine.Renderer.RaylibRenderer;
 
 class RaylibRenderer: IRenderer {
     Raylib_cs.Color bgColor = Raylib_cs.Color.RayWhite;
+
+    readonly DefaultObjectPool<ResourceHandle> resources = new(new DefaultPooledObjectPolicy<ResourceHandle>());
 
     public void Init()
     {
@@ -24,5 +27,22 @@ class RaylibRenderer: IRenderer {
     public void Shutdown()
     {
         Raylib.CloseWindow();
+    }
+
+    public ResourceHandle AddResource(IResource resource) {
+        // TODO: Error handling
+        var handle = resources.Get();
+        handle.BindResource(resource);
+        return handle;
+    }
+
+    public void DestroyResource(ResourceHandle handle)
+    {
+        resources.Return(handle);
+    }
+
+    public void DrawResource(ResourceHandle resource)
+    {
+        // TODO
     }
 }
