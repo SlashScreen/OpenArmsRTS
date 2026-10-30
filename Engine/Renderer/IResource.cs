@@ -1,5 +1,5 @@
-using Microsoft.Extensions.ObjectPool;
-
 namespace RTS.Engine.Renderer;
 
-interface IResource : IResettable;
+interface IResource {
+    void Draw(IRenderer irenderer);
+}

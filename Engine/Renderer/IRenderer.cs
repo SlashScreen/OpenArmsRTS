@@ -1,3 +1,6 @@
+using Brutal.Numerics;
+using FlashyDJ.Slotmaps;
+
 namespace RTS.Engine.Renderer;
 
 interface IRenderer {
@@ -7,9 +10,15 @@ interface IRenderer {
 
     void Shutdown();
 
-    ResourceHandle AddResource(IResource resource);
+    SlotKey AddResource(IResource resource);
 
-    void DestroyResource(ResourceHandle handle);
+    void DestroyResource(SlotKey handle);
 
-    void DrawResource(ResourceHandle resource);
+    IResource? GetResource(SlotKey resource);
+
+    SlotKey AddInstance(SlotKey resource, float4x4 transform);
+
+    void DestroyInstance(SlotKey instance);
+
+    ResourceInstance? GetInstance(SlotKey instance);
 }

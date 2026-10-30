@@ -17,6 +17,7 @@
     <PackageReference Include="Ahwoo.BRUTAL.Strings" Version="2026.10.2" />
     <PackageReference Include="Arch" Version="2.1.0" />
     <PackageReference Include="Arch-Events" Version="2.1.0" />
+    <PackageReference Include="FlashyDJ.Slotmaps" Version="0.1.0-alpha" />
     <PackageReference Include="Raylib-cs" Version="8.1.0" />
   </ItemGroup>
 
