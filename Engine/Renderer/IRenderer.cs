@@ -16,6 +16,8 @@ interface IRenderer {
 
     IResource? GetResource(SlotKey resource);
 
+    T? GetResourceAs<T>(SlotKey resource) where T: IResource;
+
     SlotKey AddInstance(SlotKey resource, float4x4 transform);
 
     void DestroyInstance(SlotKey instance);

@@ -18,7 +18,14 @@ class Application {
 
         engine.WithWorld((world) =>
         {
-            world.Create(new TransformComponent(), new RenderComponent(), new VeclocityComponent(new float3(1.0F, 0.0F, 1.0F)));
+            var rend = engine.Renderer!;
+            var modelRid = rend.AddResource(new ModelResource(
+                rend.AddResource(MeshResource.Cube(new(1.0F))),
+                rend.AddResource(MaterialResource.CreateDefault()))
+            );
+            var instance = rend.AddInstance(modelRid, float4x4.Identity);
+
+            world.Create(new TransformComponent(), new RenderComponent(instance), new VeclocityComponent(new float3(1.0F, 0.0F, 1.0F)));
         });
 
         engine.AddSystem(new TestSystem());

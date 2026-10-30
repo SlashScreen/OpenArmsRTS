@@ -20,11 +20,14 @@ class RaylibRenderer: IRenderer {
 
         cam = new()
         {
-            FovY = 60.0F,
+            FovY = 45.0F,
             Projection = CameraProjection.Perspective,
-            Position = new(5.0F, 10.0F, 5.0F),
-            Target = new(),
+            Position = new(0.0F, 10.0F, 10.0F),
+            Target = new(0.0F),
+            Up = new(0.0F, 1.0F, 0.0F),
         };
+
+        Raylib.SetTargetFPS(60);
     }
 
     public void Render()
@@ -38,17 +41,21 @@ class RaylibRenderer: IRenderer {
             // TODO: multiple cameras?
             Raylib.BeginMode3D(cam);
             {
+                Raylib.DrawCubeV(new(0.0F, 3.0F, 0.0F), new(1.0F), Raylib_cs.Color.Red);
+
                 foreach (var (rid, xforms) in batches) {
-                    /*
-                        TODO:
-                        1. Get resource
-                        2. Draw batched or in a loop at first
-                    */
+                    var res = GetResource(rid)!;
+                    switch (res) {
+                        case IDrawable d: {
+                                d.Draw(this, xforms);
+                                break;
+                        }
+                    }
                 }
             }
             Raylib.EndMode3D();
 
-            Raylib.DrawText("Hello Raylib!", 12, 12, 20, Raylib_cs.Color.Black);
+            Raylib.DrawText("Hello Raylib!...", 12, 12, 20, Raylib_cs.Color.Black);
         }
         Raylib.EndDrawing();
     }
@@ -66,14 +73,21 @@ class RaylibRenderer: IRenderer {
         return key;
     }
 
-    public IResource? GetResource(SlotKey resource) {
+    public IResource? GetResource(SlotKey resource)
+    {
         if (!resources.TryGet(resource, out var value)) return null;
         else return value;
     }
 
+    public T? GetResourceAs<T>(SlotKey resource) where T : IResource => GetResource(resource) switch
+    {
+        T val => val,
+        _ => default,
+    };
+
     public void DestroyResource(SlotKey handle)
     {
-        resources.Remove(handle);
+        resources.Remove(handle).Dispose();
         batches.Remove(handle);
     }
 

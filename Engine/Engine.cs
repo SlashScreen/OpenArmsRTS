@@ -17,6 +17,7 @@ class Engine(IRenderer? renderer): IDisposable {
     event SystemDelegate? OnPhysicsTick;
 
     public bool ShouldShutdown { get => field || Raylib.WindowShouldClose(); private set; } // TODO: Some other way of doing this for input
+    public IRenderer? Renderer => renderer;
 
     private World? ecsWorld;
 
