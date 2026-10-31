@@ -42,6 +42,7 @@ class RaylibRenderer: IRenderer {
             Raylib.BeginMode3D(cam);
             {
                 Raylib.DrawCubeV(new(0.0F, 3.0F, 0.0F), new(1.0F), Raylib_cs.Color.Red);
+                //Raylib.DrawGrid(10, 10);
 
                 foreach (var (rid, xforms) in batches) {
                     var res = GetResource(rid)!;
@@ -117,7 +118,8 @@ class RaylibRenderer: IRenderer {
         foreach (var (_, instance) in instances)
         {
             if (instance == null) continue;
-            batches[instance.RID].Add(instance.Transform); // If we get an error gete there is an issue with adding lists
+            //Console.WriteLine($"batching transform {instance.Transform}");
+            batches[instance.RID].Add(instance.Transform); // If we get an error here there is an issue with adding lists
         }
     }
 }

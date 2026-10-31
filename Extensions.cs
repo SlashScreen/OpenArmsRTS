@@ -8,7 +8,12 @@ public static class RTSExtensions {
     public static Vector3 ToNumerics(this float3 v) => Unsafe.BitCast<float3, Vector3>(v);
     public static float3 ToBrutal(this Vector3 v) => Unsafe.BitCast<Vector3, float3>(v);
     public static Vector4 ToNumerics(this float4 v) => Unsafe.BitCast<float4, Vector4>(v);
-    public static Matrix4x4 ToNumerics(this float4x4 m) => Matrix4x4.Create(m.X.ToNumerics(), m.Y.ToNumerics(), m.Z.ToNumerics(), m.W.ToNumerics());
+    public static Matrix4x4 ToNumerics(this float4x4 m) => Matrix4x4.Create(
+        m.M11, m.M12, m.M13, m.M14,
+        m.M21, m.M22, m.M23, m.M24,
+        m.M31, m.M32, m.M33, m.M34,
+        m.M41, m.M42, m.M43, m.M44
+    );
 
     extension<T>(T src)
     {
@@ -28,7 +33,7 @@ public static class RTSExtensions {
     {
         public U? Let<U>(Func<T, U> fn)
         {
-            if (src == null)
+            if (src != null)
             {
                 return fn(src!);
             }
@@ -37,7 +42,7 @@ public static class RTSExtensions {
 
         public void Let(Action<T> fn)
         {
-            if (src == null)
+            if (src != null)
             {
                 fn(src!);
             }

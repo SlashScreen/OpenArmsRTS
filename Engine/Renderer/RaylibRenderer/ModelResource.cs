@@ -24,7 +24,7 @@ class ModelResource(SlotKey mesh, SlotKey material) : IDrawable
         var matRes = renderer.GetResourceAs<MaterialResource>(material) ?? throw new InvalidRidTypeException<MaterialResource>();
         // TODO: Instancing with shader
         foreach (var tx in transforms) {
-            Raylib.DrawMesh(meshRes.Mesh, matRes.Material, tx.ToNumerics());
+            Raylib.DrawMesh(meshRes.Mesh, matRes.Material, float4x4.Transpose(tx).ToNumerics());
         }
     }
 

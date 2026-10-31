@@ -21,7 +21,7 @@ class Application {
             var rend = engine.Renderer!;
             var modelRid = rend.AddResource(new ModelResource(
                 rend.AddResource(MeshResource.Cube(new(1.0F))),
-                rend.AddResource(MaterialResource.CreateDefault()))
+                rend.AddResource(MaterialResource.CreateWithColor(Raylib_cs.Color.Blue)))
             );
             var instance = rend.AddInstance(modelRid, float4x4.Identity);
 
@@ -29,6 +29,7 @@ class Application {
         });
 
         engine.AddSystem(new TestSystem());
+        engine.AddSystem(new RenderTransformUpdateSystem());
     }
 
     public void Run()
