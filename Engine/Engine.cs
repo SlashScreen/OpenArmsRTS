@@ -21,13 +21,20 @@ class Engine: IDisposable {
 
     public bool ShouldShutdown { get => field || Raylib.WindowShouldClose(); private set; } // TODO: Some other way of doing this for input
     public IRenderer? Renderer;
+    public VFS.VFS VFS { get; init; }
 
     private World? ecsWorld;
 
-    public Engine(IRenderer? renderer) {
+    public Engine(IRenderer? renderer, List<string> loadOrder)
+    {
         instance = this;
         Renderer = renderer;
+        VFS = new(loadOrder);
     }
+
+    public Engine(IRenderer? renderer) : this(renderer, []) { }
+
+    public Engine() : this(null, []) { }
 
     public void Init()
     {

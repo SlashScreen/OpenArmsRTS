@@ -21,7 +21,7 @@ class MeshResource(Mesh mesh) : IResource
     public static MeshResource Sphere(float radius, int rings, int slices) => new(Raylib.GenMeshSphere(radius, rings, slices));
     public static MeshResource Heightmap(SlotKey heightmap, float3 size) => new(
         Raylib.GenMeshHeightmap(
-            Engine.Instance.Renderer?.GetResourceAs<ImageResouce>(heightmap)?.Image ?? throw new InvalidRidTypeException<ImageResouce>(),
+            Engine.Instance.Renderer?.GetResourceAs<ImageResource>(heightmap)?.Image ?? throw new InvalidRidTypeException<ImageResource>(),
             size.ToNumerics()
         )
     );
