@@ -16,7 +16,11 @@ interface IRenderer {
 
     IResource? GetResource(SlotKey resource);
 
-    T? GetResourceAs<T>(SlotKey resource) where T: IResource;
+    T? GetResourceAs<T>(SlotKey resource) where T : IResource;
+
+    void IncRef(SlotKey resource);
+
+    void DecRef(SlotKey resource);
 
     SlotKey AddInstance(SlotKey resource, float4x4 transform);
 

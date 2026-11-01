@@ -6,6 +6,10 @@ class MaterialResource(Material material) : IResource
 {
     public Material Material => material;
 
+    public int RefCount { get; private set; } = 1;
+    public void Reference() => RefCount++;
+    public void Dereference() => RefCount--;
+
     public void Dispose()
     {
         Raylib.UnloadMaterial(material);

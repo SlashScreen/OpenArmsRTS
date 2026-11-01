@@ -63,6 +63,10 @@ class RaylibRenderer: IRenderer {
 
     public void Shutdown()
     {
+        foreach (var (_, r) in resources)
+        {
+            r.Dispose();
+        }
         Raylib.CloseWindow();
     }
 
@@ -90,6 +94,7 @@ class RaylibRenderer: IRenderer {
     {
         resources.Remove(handle).Dispose();
         batches.Remove(handle);
+        FilterDerefed();
     }
 
     public SlotKey AddInstance(SlotKey resource, float4x4 transform)
@@ -105,6 +110,17 @@ class RaylibRenderer: IRenderer {
     {
         if (!instances.TryGet(instance, out var value)) return null;
         else return value;
+    }
+
+    public void IncRef(SlotKey rid) => GetResource(rid)?.Reference();
+
+    public void DecRef(SlotKey rid) => GetResource(rid)?.Dereference();
+
+    void FilterDerefed() {
+        foreach(var (handle, res) in resources.Where((kv) => kv.Value.RefCount <= 0 )) {
+            resources.Remove(handle).Dispose();
+            batches.Remove(handle);
+        }
     }
 
     void Batch() {

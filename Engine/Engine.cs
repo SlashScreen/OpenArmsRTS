@@ -6,31 +6,39 @@ using RTS.Engine.Systems;
 
 namespace RTS.Engine;
 
-class Engine(IRenderer? renderer): IDisposable {
+class Engine: IDisposable {
     public delegate void SystemDelegate(World world);
     public delegate void SystemTickDelegate(World world, double delta);
 
     public const int TPS = 20;
     public const double PHYSICS_DELTA = 1.0 / TPS;
 
+    static Engine? instance;
+    public static Engine Instance => instance ?? throw new Exception("Engine not initialized.");
+
     event SystemTickDelegate? OnTick;
     event SystemDelegate? OnPhysicsTick;
 
     public bool ShouldShutdown { get => field || Raylib.WindowShouldClose(); private set; } // TODO: Some other way of doing this for input
-    public IRenderer? Renderer => renderer;
+    public IRenderer? Renderer;
 
     private World? ecsWorld;
+
+    public Engine(IRenderer? renderer) {
+        instance = this;
+        Renderer = renderer;
+    }
 
     public void Init()
     {
         ecsWorld = World.Create();
-        renderer?.Init();
+        Renderer?.Init();
     }
 
     public void Tick(double delta)
     {
         OnTick?.Invoke(ecsWorld!, delta);
-        renderer?.Render();
+        Renderer?.Render();
     }
 
     public void PhysicsTick() {
@@ -39,7 +47,7 @@ class Engine(IRenderer? renderer): IDisposable {
 
     public void Dispose()
     {
-        renderer?.Shutdown();
+        Renderer?.Shutdown();
         ecsWorld!.Dispose();
     }
 
