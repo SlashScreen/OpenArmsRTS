@@ -3,7 +3,7 @@ using FlashyDJ.Slotmaps;
 
 namespace RTS.Engine.Renderer;
 
-public class ResourceInstance {
+public class ResourceInstance: IDisposable {
     public SlotKey RID {
         get => rid;
         set
