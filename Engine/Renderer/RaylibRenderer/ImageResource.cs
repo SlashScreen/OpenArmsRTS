@@ -34,10 +34,10 @@ class ImageResource(Image image) : IResource
     public static ImageResource LoadFromMemory(byte[] buffer, ImageFormats extension) => LoadFromMemory(buffer, formatStrings[extension]);
     public static ImageResource LoadFromPath(string path)
     {
-        if (!Path.HasExtension(path)) throw new Exception("Image must be file.");
+        if (!Path.HasExtension(path)) throw new Exception("Image must be a file.");
         var ext = Path.GetExtension(path);
-        if (!formatStrings.ContainsValue(ext)) throw new Exception("Image must be supported format.")
-        ;
+        if (!formatStrings.ContainsValue(ext)) throw new Exception("Image must be supported format.");
+
         if (!Engine.Instance.VFS.TryResolvePath(path, out string resolvedPath)) throw new Exception($"Could not find file at path {path}");
         if (Engine.Instance.VFS.TryReadFileResolved(resolvedPath, out byte[] data)) return LoadFromMemory(data, ext);
         else throw new Exception($"Could not read file at path {path}");

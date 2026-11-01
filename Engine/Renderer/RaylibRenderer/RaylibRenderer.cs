@@ -63,10 +63,16 @@ class RaylibRenderer: IRenderer {
 
     public void Shutdown()
     {
-        foreach (var (_, r) in resources)
+        foreach (var (rid, _) in instances)
         {
-            r.Dispose();
+            DestroyInstance(rid);
         }
+
+        // foreach (var (_, r) in resources)
+        // {
+        //     r.Dispose();
+        // }
+        resources.Clear();
         Raylib.CloseWindow();
     }
 
@@ -115,10 +121,15 @@ class RaylibRenderer: IRenderer {
 
     public void DecRef(SlotKey rid)
     {
-        GetResource(rid).Let((res) =>
+        GetResource(rid).Let(res =>
         {
             res.Dereference();
-            if (res.RefCount <= 0) DestroyResource(rid);
+
+            if (res.RefCount <= 0)
+            {
+                Console.WriteLine($"Resource {rid} is unreferenced. Unloading...");
+                DestroyResource(rid);
+            }
         });
     }
 

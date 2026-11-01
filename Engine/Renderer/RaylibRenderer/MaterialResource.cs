@@ -15,17 +15,24 @@ class MaterialResource(Material material) : IResource
     {
         get; set
         {
-            field?.Let(f => Engine.Instance.Renderer?.DecRef(f)); // Deref old if it is not null
-            value?.Let(v => // If setting to not null, Ref
+            Engine.Instance.Renderer?.Let(ri =>
             {
-                Engine.Instance.Renderer?.Let(ri =>
+                if (value is null)
                 {
+                    // Uh is this equivalent to (Shader){ 0 }...
+                    material.Shader = new Shader(); // TODO: Default shader?
+                }
+                else
+                {
+                    var v = value ?? throw new Exception(); // COuldn't get it to null forgive...
                     ri.IncRef(v);
                     var sh = ri.GetResourceAs<ShaderResource>(v) ?? throw new InvalidRidTypeException<ShaderResource>();
                     material.Shader = sh.Shader;
-                });
+                }
             });
 
+            // Hopefully this should mean it never points to an unloaded shader
+            field?.Let(f => Engine.Instance.Renderer?.DecRef(f)); // Deref old if it is not null
             field = value;
         }
     }
@@ -59,13 +66,14 @@ class MaterialResource(Material material) : IResource
 
     public void Dispose()
     {
+        Console.WriteLine("Unloading material");
+        Shader = null; // Will deref
         Raylib.UnloadMaterial(material);
 
         var ri = Engine.Instance.Renderer ?? throw new Exception("No renderer.");
         foreach(var tex in textures) {
             tex?.Let(ri.DecRef);
         }
-        Shader = null; // Will deref
     }
 
     public static MaterialResource CreateDefault() => new(Raylib.LoadMaterialDefault());

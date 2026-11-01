@@ -30,9 +30,7 @@ class ModelResource : IDrawable
         var meshRes = renderer.GetResourceAs<MeshResource>(Mesh) ?? throw new InvalidRidTypeException<MeshResource>(); // Do we move throwing to GetResourceAs?
         var matRes = renderer.GetResourceAs<MaterialResource>(Material) ?? throw new InvalidRidTypeException<MaterialResource>();
         // TODO: Instancing with shader
-        foreach (var tx in transforms) {
-            Raylib.DrawMesh(meshRes.Mesh, matRes.Material, float4x4.Transpose(tx).ToNumerics());
-        }
+        Raylib.DrawMeshInstanced(meshRes.Mesh, matRes.Material, transforms.Select(tx => float4x4.Transpose(tx).ToNumerics()).ToArray(),  transforms.Count());
     }
 
     public void Dispose() {

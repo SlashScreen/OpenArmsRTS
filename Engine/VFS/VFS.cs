@@ -5,7 +5,7 @@ namespace RTS.Engine.VFS;
 
 class VFS(List<string> loadOrder) {
     const string MODS_PATH = "mods/";
-    const string RESOURCES_PATH = "resources/";
+    const string BUILTIN_PATH = "builtin/";
     const int BUFFER_LEN = 128;
 
     public bool TryResolvePath(string path, out string resolvedPath)
@@ -27,17 +27,15 @@ class VFS(List<string> loadOrder) {
             }
         }
 
-        // Builtin resources fallback
-        if (path.StartsWith(RESOURCES_PATH))
-        {
-            builder.Clear();
-            builder.Append(path);
+        // Builtin fallback
+        builder.Clear();
+        builder.Append(BUILTIN_PATH);
+        builder.Append(path);
 
-            if (Utf8.Path.Exists(builder.WrittenSpan))
-            {
-                resolvedPath = builder.WrittenSpan.ToString16();
-                return true;
-            }
+        if (Utf8.Path.Exists(builder.WrittenSpan))
+        {
+            resolvedPath = builder.WrittenSpan.ToString16();
+            return true;
         }
 
         resolvedPath = "";

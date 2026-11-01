@@ -21,11 +21,16 @@ class Application {
             var rend = engine.Renderer!;
             var modelRid = rend.AddResource(new ModelResource(
                 rend.AddResource(MeshResource.Cube(new(1.0F))),
-                rend.AddResource(MaterialResource.CreateWithColor(Raylib_cs.Color.Blue)))
+                rend.AddResource(MaterialResource
+                    .CreateFromShaderPaths("resources/shaders/lighting_instancing.vs", "resources/shaders/base.fs")
+                    .Apply(m => m.SetMapColor(MaterialMapIndex.Diffuse, Raylib_cs.Color.Blue)))
+            )
             );
-            var instance = rend.AddInstance(modelRid, float4x4.Identity);
+            var instance1 = rend.AddInstance(modelRid, float4x4.Identity);
+            var instance2 = rend.AddInstance(modelRid, float4x4.Identity);
 
-            world.Create(new TransformComponent(), new RenderComponent(instance), new VeclocityComponent(new float3(1.0F, 0.0F, 1.0F)));
+            world.Create(new TransformComponent(), new RenderComponent(instance1), new VeclocityComponent(new float3(1.0F, 0.0F, 1.0F)));
+            world.Create(new TransformComponent(), new RenderComponent(instance2), new VeclocityComponent(new float3(0.0F, 1.0F, 0.0F)));
         });
 
         engine.AddSystem(new TestSystem());
