@@ -1,10 +1,11 @@
 using Brutal.Numerics;
 using FlashyDJ.Slotmaps;
 using Raylib_cs;
+using RTS.Engine.UI;
 
 namespace RTS.Engine.Renderer.RaylibRenderer;
 
-class RaylibRenderer: IRenderer {
+class RaylibRenderer(IUIProvider? uiProvider): IRenderer {
     Raylib_cs.Color bgColor = Raylib_cs.Color.RayWhite;
 
     private readonly SlotMap<IResource> resources = [];
@@ -13,6 +14,8 @@ class RaylibRenderer: IRenderer {
     private readonly Dictionary<SlotKey, List<float4x4>> batches = [];
 
     private Camera3D cam;
+
+    public RaylibRenderer() : this(null) { }
 
     public void Init()
     {
@@ -28,6 +31,8 @@ class RaylibRenderer: IRenderer {
         };
 
         Raylib.SetTargetFPS(60);
+
+        uiProvider?.Init();
     }
 
     public void Render()
@@ -56,7 +61,7 @@ class RaylibRenderer: IRenderer {
             }
             Raylib.EndMode3D();
 
-            Raylib.DrawText("Hello Raylib!...", 12, 12, 20, Raylib_cs.Color.Black);
+            uiProvider?.Frame();
         }
         Raylib.EndDrawing();
     }
@@ -73,6 +78,7 @@ class RaylibRenderer: IRenderer {
         //     r.Dispose();
         // }
         resources.Clear();
+        uiProvider?.Dispose();
         Raylib.CloseWindow();
     }
 

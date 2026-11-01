@@ -3,6 +3,7 @@ using Raylib_cs;
 using RTS.Engine.Components;
 using RTS.Engine.Renderer.RaylibRenderer;
 using RTS.Engine.Systems;
+using RTS.Engine.UI;
 
 namespace RTS;
 
@@ -10,7 +11,7 @@ class Application {
 
     public bool ShouldClose => Raylib.WindowShouldClose() || engine.ShouldShutdown;
 
-    readonly Engine.Engine engine = new(new RaylibRenderer());
+    readonly Engine.Engine engine = new(new RaylibRenderer(new ImGuiProvider()));
 
     public void Init()
     {
