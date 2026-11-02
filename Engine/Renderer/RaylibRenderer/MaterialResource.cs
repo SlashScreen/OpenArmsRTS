@@ -66,7 +66,6 @@ class MaterialResource(Material material) : IResource
 
     public void Dispose()
     {
-        Console.WriteLine("Unloading material");
         Shader = null; // Will deref
         Raylib.UnloadMaterial(material);
 

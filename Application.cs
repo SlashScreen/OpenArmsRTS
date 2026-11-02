@@ -30,11 +30,11 @@ class Application {
             var instance1 = rend.AddInstance(modelRid, float4x4.Identity);
             var instance2 = rend.AddInstance(modelRid, float4x4.Identity);
 
-            world.Create(new TransformComponent(), new RenderComponent(instance1), new VeclocityComponent(new float3(1.0F, 0.0F, 1.0F)));
-            world.Create(new TransformComponent(), new RenderComponent(instance2), new VeclocityComponent(new float3(0.0F, 1.0F, 0.0F)));
+            world.Create(new TransformComponent(), new RenderComponent(instance1), new TargetComponent(new float3(10.0F, 0.0F, 1.0F)), new MobileComponent(1.0F));
+            world.Create(new TransformComponent(), new RenderComponent(instance2), new TargetComponent(new float3(5.0F, 0.0F, 5.0F)), new MobileComponent(1.5F));
         });
 
-        engine.AddSystem(new TestSystem());
+        engine.AddSystem(new MoveToTargetSystem());
         engine.AddSystem(new RenderTransformUpdateSystem());
     }
 

@@ -13,7 +13,6 @@ class ShaderResource(Shader shader) : IResource
     public void Dispose()
     {
         if(Raylib.IsShaderValid(shader)) {
-            Console.WriteLine("Unloading shader");
             Raylib.UnloadShader(shader);
         };
     }
