@@ -1,6 +1,7 @@
 using Brutal.Numerics;
 using Raylib_cs;
 using RTS.Engine.Components;
+using RTS.Engine.Input.RaylibInput;
 using RTS.Engine.Renderer.RaylibRenderer;
 using RTS.Engine.Systems;
 using RTS.Engine.UI;
@@ -11,7 +12,10 @@ class Application {
 
     public bool ShouldClose => Raylib.WindowShouldClose() || engine.ShouldShutdown;
 
-    readonly Engine.Engine engine = new(new RaylibRenderer(new ImGuiProvider()));
+    readonly Engine.Engine engine = new(new RaylibRenderer(new ImGuiProvider()), new RaylibInputProvider(new([
+        new (new RaylibInputProvider.IsKeyJustPressed(KeyboardKey.W), "w_press"),
+        new (new RaylibInputProvider.IsKeyJustPressed(KeyboardKey.Escape), Engine.Engine.QUIT_ACTION_NAME)
+    ])));
 
     public void Init()
     {

@@ -1,6 +1,6 @@
 using Arch.Core;
 using Arch.Core.Events;
-using Raylib_cs;
+using RTS.Engine.Input;
 using RTS.Engine.Renderer;
 using RTS.Engine.Systems;
 
@@ -12,6 +12,7 @@ class Engine: IDisposable {
 
     public const int TPS = 20;
     public const double PHYSICS_DELTA = 1.0 / TPS;
+    public const string QUIT_ACTION_NAME = "quit";
 
     static Engine? instance;
     public static Engine Instance => instance ?? throw new Exception("Engine not initialized.");
@@ -19,22 +20,29 @@ class Engine: IDisposable {
     event SystemTickDelegate? OnTick;
     event SystemDelegate? OnPhysicsTick;
 
-    public bool ShouldShutdown { get => field || Raylib.WindowShouldClose(); private set; } // TODO: Some other way of doing this for input
+    public bool ShouldShutdown { get; private set; }
     public IRenderer? Renderer;
     public VFS.VFS VFS { get; init; }
+    public IInputProvider? InputProvider { get; init; }
 
     private World? ecsWorld;
 
-    public Engine(IRenderer? renderer, List<string> loadOrder)
+    public Engine(IRenderer? renderer, IInputProvider? inputProvider, List<string> loadOrder)
     {
         instance = this;
         Renderer = renderer;
         VFS = new(loadOrder);
+        InputProvider = inputProvider;
+
+        InputProvider?.Let(ip =>
+        {
+            ip.OnInput += OnInput;
+        });
     }
 
-    public Engine(IRenderer? renderer) : this(renderer, []) { }
+    public Engine(IRenderer? renderer, IInputProvider? inputProvider) : this(renderer, inputProvider, []) { }
 
-    public Engine() : this(null, []) { }
+    public Engine() : this(null, null, []) { }
 
     public void Init()
     {
@@ -44,6 +52,7 @@ class Engine: IDisposable {
 
     public void Tick(double delta)
     {
+        InputProvider?.Poll();
         OnTick?.Invoke(ecsWorld!, delta);
         Renderer?.Render();
     }
@@ -85,4 +94,14 @@ class Engine: IDisposable {
     public void SubscribeComponentSet<T>(ComponentSetHandler<T> fn) => ecsWorld!.SubscribeComponentSet<T>(fn);
 
     public void SubscribeComponentRemoved<T>(ComponentRemovedHandler<T> fn) => ecsWorld!.SubscribeComponentRemoved<T>(fn);
+
+    void OnInput(string name, InputEvent inputEvent) {
+        Console.WriteLine(name);
+
+        switch (name) {
+            case QUIT_ACTION_NAME:
+                RequestShutdown();
+                break;
+        }
+    }
 }

@@ -20,6 +20,8 @@ record class EnvironmentResource(Camera3D Camera, RenderTexture2D RenderTexture)
             Raylib.BeginMode3D(Camera);
             foreach (var (rid, xforms) in batches)
             {
+                Raylib.DrawGrid(10, 10);
+
                 var res = renderer.GetResource(rid)!;
                 switch (res)
                 {

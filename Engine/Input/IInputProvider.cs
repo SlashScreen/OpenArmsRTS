@@ -1,5 +1,8 @@
 namespace RTS.Engine.Input;
 
-// TODO
+interface IInputProvider {
+    public delegate void InputEventDelegate(string name, InputEvent inputEvent);
+    public event InputEventDelegate OnInput;
 
-interface IInputProvider;
+    void Poll();
+}
