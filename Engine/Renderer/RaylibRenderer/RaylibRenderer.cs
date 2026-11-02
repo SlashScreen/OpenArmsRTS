@@ -14,6 +14,7 @@ class RaylibRenderer(IUIProvider? uiProvider): IRenderer {
     private readonly Dictionary<SlotKey, List<float4x4>> batches = [];
 
     private Camera3D cam;
+    private RenderTexture2D frameBuffer;
 
     public RaylibRenderer() : this(null) { }
 
@@ -33,11 +34,13 @@ class RaylibRenderer(IUIProvider? uiProvider): IRenderer {
         Raylib.SetTargetFPS(60);
 
         uiProvider?.Init();
+
+        frameBuffer = Raylib.LoadRenderTexture(Raylib.GetRenderWidth(), Raylib.GetRenderHeight());
     }
 
     public void Render()
     {
-        Raylib.BeginDrawing();
+        Raylib.BeginTextureMode(frameBuffer);
         {
             Raylib.ClearBackground(bgColor);
             // TODO: Query all rendercomponents, update transforms
@@ -63,6 +66,15 @@ class RaylibRenderer(IUIProvider? uiProvider): IRenderer {
 
             uiProvider?.Frame();
         }
+        Raylib.EndTextureMode();
+        // draw framebuffer
+        Raylib.BeginDrawing();
+        {
+            var w = Raylib.GetRenderWidth();
+            var h = Raylib.GetRenderHeight();
+
+            Raylib.DrawTextureRec(frameBuffer.Texture, new(new(0.0F), w, -h), new(0.0F), Raylib_cs.Color.White);
+        }
         Raylib.EndDrawing();
     }
 
@@ -73,12 +85,9 @@ class RaylibRenderer(IUIProvider? uiProvider): IRenderer {
             DestroyInstance(rid);
         }
 
-        // foreach (var (_, r) in resources)
-        // {
-        //     r.Dispose();
-        // }
         resources.Clear();
         uiProvider?.Dispose();
+        Raylib.UnloadTexture(frameBuffer.Texture);
         Raylib.CloseWindow();
     }
 
