@@ -6,15 +6,13 @@ using RTS.Engine.UI;
 namespace RTS.Engine.Renderer.RaylibRenderer;
 
 class RaylibRenderer(IUIProvider? uiProvider): IRenderer {
-    Raylib_cs.Color bgColor = Raylib_cs.Color.RayWhite;
-
     private readonly SlotMap<IResource> resources = [];
     private readonly SlotMap<ResourceInstance> instances = [];
 
     private readonly Dictionary<SlotKey, List<float4x4>> batches = [];
 
-    private Camera3D cam;
-    private RenderTexture2D frameBuffer;
+    private List<SlotKey> environments = [];
+    private SlotKey mainEnvironment;
 
     public RaylibRenderer() : this(null) { }
 
@@ -22,59 +20,55 @@ class RaylibRenderer(IUIProvider? uiProvider): IRenderer {
     {
         Raylib.InitWindow(800, 400, "Hello World");
 
-        cam = new()
-        {
-            FovY = 45.0F,
-            Projection = CameraProjection.Perspective,
-            Position = new(0.0F, 10.0F, 10.0F),
-            Target = new(0.0F),
-            Up = new(0.0F, 1.0F, 0.0F),
-        };
-
         Raylib.SetTargetFPS(60);
 
         uiProvider?.Init();
 
-        frameBuffer = Raylib.LoadRenderTexture(Raylib.GetRenderWidth(), Raylib.GetRenderHeight());
+        var envRid = AddResource(new EnvironmentResource(
+            new()
+            {
+                FovY = 45.0F,
+                Projection = CameraProjection.Perspective,
+                Position = new(0.0F, 10.0F, 10.0F),
+                Target = new(0.0F),
+                Up = new(0.0F, 1.0F, 0.0F),
+            },
+            Raylib.LoadRenderTexture(Raylib.GetRenderWidth(), Raylib.GetRenderHeight()))
+        );
+        IncRef(envRid); // Make sure it doesnt get collected
+        environments.Add(envRid);
+        mainEnvironment = envRid;
     }
 
     public void Render()
     {
-        Raylib.BeginTextureMode(frameBuffer);
+        Batch();
+        // Draw environments
+        foreach (var envRid in environments)
         {
-            Raylib.ClearBackground(bgColor);
-            // TODO: Query all rendercomponents, update transforms
+            GetResourceAs<EnvironmentResource>(envRid)?.Draw(this, batches);
+        }
 
-            Batch();
-            // TODO: multiple cameras?
-            Raylib.BeginMode3D(cam);
+        GetResourceAs<EnvironmentResource>(mainEnvironment)?.Let(env => {
+            // Draw UI on main texture
+            Raylib.BeginTextureMode(env.RenderTexture);
             {
-                Raylib.DrawCubeV(new(0.0F, 3.0F, 0.0F), new(1.0F), Raylib_cs.Color.Red);
-                //Raylib.DrawGrid(10, 10);
-
-                foreach (var (rid, xforms) in batches) {
-                    var res = GetResource(rid)!;
-                    switch (res) {
-                        case IDrawable d: {
-                                d.Draw(this, xforms);
-                                break;
-                        }
-                    }
-                }
+                uiProvider?.Frame();
             }
-            Raylib.EndMode3D();
+            Raylib.EndTextureMode();
 
-            uiProvider?.Frame();
-        }
-        Raylib.EndTextureMode();
-        // draw framebuffer
-        Raylib.BeginDrawing();
-        {
-            var w = Raylib.GetRenderWidth();
-            var h = Raylib.GetRenderHeight();
+            // Draw main environment texture
+            Raylib.BeginDrawing();
+            {
+                var w = Raylib.GetRenderWidth();
+                var h = Raylib.GetRenderHeight();
 
-            Raylib.DrawTextureRec(frameBuffer.Texture, new(new(0.0F), w, -h), new(0.0F), Raylib_cs.Color.White);
-        }
+                GetResourceAs<EnvironmentResource>(mainEnvironment)?.Let(env =>
+                    Raylib.DrawTextureRec(env.RenderTexture.Texture, new(new(0.0F), w, -h), new(0.0F), Raylib_cs.Color.White)
+                );
+            }
+        });
+
         Raylib.EndDrawing();
     }
 
@@ -85,9 +79,12 @@ class RaylibRenderer(IUIProvider? uiProvider): IRenderer {
             DestroyInstance(rid);
         }
 
+        foreach (var rid in environments) {
+            DecRef(rid);
+        }
+
         resources.Clear();
         uiProvider?.Dispose();
-        Raylib.UnloadTexture(frameBuffer.Texture);
         Raylib.CloseWindow();
     }
 
