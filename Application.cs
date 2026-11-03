@@ -13,8 +13,11 @@ class Application {
     public bool ShouldClose => Raylib.WindowShouldClose() || engine.ShouldShutdown;
 
     readonly Engine.Engine engine = new(new RaylibRenderer(new ImGuiProvider()), new RaylibInputProvider(new([
-        new (new RaylibInputProvider.IsKeyJustPressed(KeyboardKey.W), "w_press"),
-        new (new RaylibInputProvider.IsKeyJustPressed(KeyboardKey.Escape), Engine.Engine.QUIT_ACTION_NAME)
+        new (new RaylibInputProvider.IsKeyDown(KeyboardKey.W), "forward"),
+        new (new RaylibInputProvider.IsKeyDown(KeyboardKey.S), "backward"),
+        new (new RaylibInputProvider.IsKeyDown(KeyboardKey.A), "left"),
+        new (new RaylibInputProvider.IsKeyDown(KeyboardKey.D), "right"),
+        new (new RaylibInputProvider.IsKeyDown(KeyboardKey.Escape), Engine.Engine.QUIT_ACTION_NAME)
     ])));
 
     public void Init()
@@ -36,8 +39,13 @@ class Application {
 
             world.Create(new TransformComponent(), new RenderComponent(instance1), new TargetComponent(new float3(10.0F, 0.0F, 1.0F)), new MobileComponent(1.0F));
             world.Create(new TransformComponent(), new RenderComponent(instance2), new TargetComponent(new float3(5.0F, 0.0F, 5.0F)), new MobileComponent(1.5F));
+
+            var env = rend.GetResourceAs<EnvironmentResource>(rend.MainEnvironment) ?? throw new Exception("girl what");
+            var cam_pos = env.Camera.Position.ToBrutal();
+            world.Create(new TransformComponent(float4x4.CreateTranslation(cam_pos)), new CameraComponent(rend.MainEnvironment));
         });
 
+        engine.AddSystem(new CameraInputSystem());
         engine.AddSystem(new MoveToTargetSystem());
         engine.AddSystem(new RenderTransformUpdateSystem());
     }

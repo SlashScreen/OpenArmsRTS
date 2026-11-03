@@ -4,20 +4,30 @@ using Raylib_cs;
 
 namespace RTS.Engine.Renderer.RaylibRenderer;
 
-record class EnvironmentResource(Camera3D Camera, RenderTexture2D RenderTexture): IResource {
+record class EnvironmentResource: IResource {
     Raylib_cs.Color bgColor = Raylib_cs.Color.RayWhite;
 
     public int RefCount { get; private set; }
     public void Reference() => RefCount++;
     public void Dereference() => RefCount--;
 
+    public ref Camera3D Camera => ref camera;
+    public RenderTexture2D RenderTexture => renderTexture;
+    Camera3D camera;
+    RenderTexture2D renderTexture;
+
+    public EnvironmentResource(Camera3D camera, RenderTexture2D renderTexture) {
+        this.camera = camera;
+        this.renderTexture = renderTexture;
+    }
+
     public void Draw(IRenderer renderer, Dictionary<SlotKey, List<float4x4>> batches)
     {
-        Raylib.BeginTextureMode(RenderTexture);
+        Raylib.BeginTextureMode(renderTexture);
         {
             Raylib.ClearBackground(bgColor);
 
-            Raylib.BeginMode3D(Camera);
+            Raylib.BeginMode3D(camera);
             foreach (var (rid, xforms) in batches)
             {
                 Raylib.DrawGrid(10, 10);
@@ -38,6 +48,6 @@ record class EnvironmentResource(Camera3D Camera, RenderTexture2D RenderTexture)
     }
 
     public void Dispose() {
-        Raylib.UnloadTexture(RenderTexture.Texture);
+        Raylib.UnloadTexture(renderTexture.Texture);
     }
 }

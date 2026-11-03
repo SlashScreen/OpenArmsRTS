@@ -1,6 +1,7 @@
 using Arch.Core;
 using Arch.Core.Events;
 using RTS.Engine.Input;
+using RTS.Engine.Input.RaylibInput;
 using RTS.Engine.Renderer;
 using RTS.Engine.Systems;
 
@@ -9,6 +10,7 @@ namespace RTS.Engine;
 class Engine: IDisposable {
     public delegate void SystemDelegate(World world);
     public delegate void SystemTickDelegate(World world, double delta);
+    public delegate bool SystemInputDelegate(World world, InputEvent inputEvent, double delta);
 
     public const int TPS = 20;
     public const double PHYSICS_DELTA = 1.0 / TPS;
@@ -19,6 +21,7 @@ class Engine: IDisposable {
 
     event SystemTickDelegate? OnTick;
     event SystemDelegate? OnPhysicsTick;
+    Dictionary<string,  List<SystemInputDelegate>> onInputEvent = [];
 
     public bool ShouldShutdown { get; private set; }
     public IRenderer? Renderer;
@@ -52,7 +55,7 @@ class Engine: IDisposable {
 
     public void Tick(double delta)
     {
-        InputProvider?.Poll();
+        InputProvider?.Poll(delta);
         OnTick?.Invoke(ecsWorld!, delta);
         Renderer?.Render();
     }
@@ -95,12 +98,22 @@ class Engine: IDisposable {
 
     public void SubscribeComponentRemoved<T>(ComponentRemovedHandler<T> fn) => ecsWorld!.SubscribeComponentRemoved<T>(fn);
 
-    void OnInput(string name, InputEvent inputEvent) {
-        Console.WriteLine(name);
+    public void SubscribeOnInputEvent(string eventName, SystemInputDelegate fn) => onInputEvent.GetOrCreate(eventName).Add(fn);
 
+    void OnInput(string name, InputEvent inputEvent, double delta) {
+        // TODO: Not hardcode this
         switch (name) {
             case QUIT_ACTION_NAME:
-                RequestShutdown();
+                if (inputEvent is RaylibInputProvider.KeyDown)
+                    RequestShutdown();
+                break;
+            default:
+                // Run queue, stopping if any input system consumes the action
+                if (onInputEvent.TryGetValue(name, out var callbacks)) {
+                    foreach (var callback in callbacks) {
+                        if (callback(ecsWorld!, inputEvent, delta)) break;
+                    }
+                }
                 break;
         }
     }

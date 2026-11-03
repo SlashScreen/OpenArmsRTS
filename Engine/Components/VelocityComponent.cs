@@ -2,4 +2,4 @@ using Brutal.Numerics;
 
 namespace RTS.Engine.Components;
 
-record struct VeclocityComponent(float3 Delta);
+record struct VelocityComponent(float3 Delta);

@@ -11,8 +11,9 @@ class RaylibRenderer(IUIProvider? uiProvider): IRenderer {
 
     private readonly Dictionary<SlotKey, List<float4x4>> batches = [];
 
-    private List<SlotKey> environments = [];
+    private readonly List<SlotKey> environments = [];
     private SlotKey mainEnvironment;
+    public SlotKey MainEnvironment => mainEnvironment;
 
     public RaylibRenderer() : this(null) { }
 
@@ -139,7 +140,6 @@ class RaylibRenderer(IUIProvider? uiProvider): IRenderer {
 
             if (res.RefCount <= 0)
             {
-                Console.WriteLine($"Resource {rid} is unreferenced. Unloading...");
                 DestroyResource(rid);
             }
         });

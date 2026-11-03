@@ -4,6 +4,8 @@ using FlashyDJ.Slotmaps;
 namespace RTS.Engine.Renderer;
 
 interface IRenderer {
+    SlotKey MainEnvironment { get; } // This is stupid. Gotta get scripting working
+
     void Init();
 
     void Render();
