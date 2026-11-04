@@ -3,6 +3,7 @@ using Raylib_cs;
 using RTS.Engine.Components;
 using RTS.Engine.Input.RaylibInput;
 using RTS.Engine.Renderer.RaylibRenderer;
+using RTS.Engine.Scripting;
 using RTS.Engine.Systems;
 using RTS.Engine.UI;
 
@@ -19,6 +20,8 @@ class Application {
         new (new RaylibInputProvider.IsKeyDown(KeyboardKey.D), "right"),
         new (new RaylibInputProvider.IsKeyDown(KeyboardKey.Escape), Engine.Engine.QUIT_ACTION_NAME)
     ])));
+
+    readonly WrenHost vm = new("System.print(\"Hello WrenSharp!\")");
 
     public void Init()
     {
@@ -58,6 +61,7 @@ class Application {
     }
 
     public void Shutdown() {
+        vm.Dispose();
         engine.Dispose();
     }
 }

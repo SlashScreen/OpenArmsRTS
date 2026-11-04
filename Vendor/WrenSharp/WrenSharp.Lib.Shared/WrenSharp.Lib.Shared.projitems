@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>18977aba-f8c7-4a53-a95b-9c181286f462</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>WrenSharp.Internal</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)StringBuilderCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Unsafe\UnsafeUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Unsafe\WrenNativeHandle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Unsafe\WrenNativeMap.cs" />
+    <Compile Include="..\WrenSharp.Lib.Shared\Unsafe\WrenNativeList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Unsafe\WrenForeign.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Unsafe\WrenObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Unsafe\WrenClass.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Unsafe\WrenInstance.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Unsafe\WrenInternalTypes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Unsafe\WrenString.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wren.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WrenErrorType.cs" />
+    <Compile Include="..\WrenSharp.Lib.Shared\Unsafe\WrenObjectType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WrenInterpretResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WrenNativeTypes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WrenType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Unsafe\WrenValue.cs" />
+  </ItemGroup>
+</Project>

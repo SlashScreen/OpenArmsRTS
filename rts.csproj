@@ -22,4 +22,9 @@
     <PackageReference Include="rlImgui-cs" Version="3.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+  	<Compile Remove="Vendor/**/*.cs" />
+    <ProjectReference Include="Vendor\WrenSharp\WrenSharp\WrenSharp.csproj" />
+  </ItemGroup>
+
 </Project>
