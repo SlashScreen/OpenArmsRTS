@@ -2,6 +2,11 @@ using WrenSharp;
 
 namespace RTS.Engine.Scripting;
 
+/*
+    TODO:
+    1. Module search
+*/
+
 class WrenHost : IDisposable
 {
     readonly WrenSharpVM vm;
