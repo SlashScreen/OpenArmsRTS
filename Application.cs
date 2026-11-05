@@ -21,7 +21,12 @@ class Application {
         new (new RaylibInputProvider.IsKeyDown(KeyboardKey.Escape), Engine.Engine.QUIT_ACTION_NAME)
     ])));
 
-    readonly WrenHost vm = new("System.print(\"Hello WrenSharp!\")");
+    readonly WrenHost vm = new(@"
+        import ""test_wren_module"" for TestClass
+        System.print(""Hello WrenSharp!"")
+        var t = TestClass.new()
+        t.sayHi()
+        ", [new TestWrenModule(),]);
 
     public void Init()
     {
