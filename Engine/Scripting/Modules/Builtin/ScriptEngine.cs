@@ -12,8 +12,9 @@ class ScriptEngine: WrenScriptClass {
                 Console.WriteLine("Engine static test");
             })
             .Static("addSystem(_)", ctx => {
-                var arg = ctx.GetArgInt32(0);
-                Console.Write($"Arg is {arg}");
+                if (!ctx.TryGetArgSharedData<ScriptSystem>(0, out var arg)) throw new Exception("Arg 0 for addSystem must be builtin.System");
+                Engine.Instance.AddSystem(arg);
+                Console.Write($"Added system");
             });
     }
 }
