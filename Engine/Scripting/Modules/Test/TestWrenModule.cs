@@ -1,8 +1,9 @@
 using WrenSharp;
 
-namespace RTS.Engine.Scripting;
+namespace RTS.Engine.Scripting.Modules.Test;
 
 class TestWrenModule: IWrenModule {
+    public IWrenSource ModuleSource => new WrenStringSource(string.Join("\n", ClassSources()));
     public string ModuleName => "test_wren_module";
 
     public string[] ClassSources() => [

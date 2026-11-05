@@ -13,7 +13,7 @@ class WrenModuleProvider(IEnumerable<IWrenModule> wrenModules): IWrenModuleProvi
 
     public IWrenSource? GetModuleSource(WrenVM vm, string moduleName)
     {
-        if (modules.TryGetValue(moduleName, out var module)) return new WrenStringSource(module.ModuleSource); // yeah it generates this on load but it should only happen once, I think?...
+        if (modules.TryGetValue(moduleName, out var module)) return module.ModuleSource;
         // TODO: file lookup
         return null;
     }

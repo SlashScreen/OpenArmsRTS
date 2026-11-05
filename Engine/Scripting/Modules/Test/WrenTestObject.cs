@@ -1,6 +1,6 @@
 using WrenSharp;
 
-namespace RTS.Engine.Scripting;
+namespace RTS.Engine.Scripting.Modules.Test;
 
 class WrenTestObject: WrenScriptClass {
     public void SayHi()

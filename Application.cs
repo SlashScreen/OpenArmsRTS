@@ -4,6 +4,8 @@ using RTS.Engine.Components;
 using RTS.Engine.Input.RaylibInput;
 using RTS.Engine.Renderer.RaylibRenderer;
 using RTS.Engine.Scripting;
+using RTS.Engine.Scripting.Modules.Builtin;
+using RTS.Engine.Scripting.Modules.Test;
 using RTS.Engine.Systems;
 using RTS.Engine.UI;
 
@@ -22,11 +24,10 @@ class Application {
     ])));
 
     readonly WrenHost vm = new(@"
-        import ""test_wren_module"" for TestClass
+        import ""builtin"" for Engine
         System.print(""Hello WrenSharp!"")
-        var t = TestClass.new()
-        t.sayHi()
-        ", [new TestWrenModule(),]);
+        Engine.testMe()
+        ", [new BuiltinModule()]);
 
     public void Init()
     {
